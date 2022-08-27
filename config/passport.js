@@ -13,7 +13,7 @@ opts.secretOrKey = keys.secreteOrkey;
 
 module.exports = passport => {
     passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
-        const connection = mysql_connection.createConnection();
+        const connection = mysql_connection.userSchema();
         connection.connect();
 
         const selectSql = 'select * from `schema` where id=?';

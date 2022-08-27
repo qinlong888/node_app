@@ -23,7 +23,7 @@ const User = require('../../models/User')
 router.post('/register', async (req, res) => {
     // console.log(req.body)
     // 查询数据库中是否有这个名字
-    const mysql_connection = connection.createConnection();
+    const mysql_connection = connection.userSchema();
     mysql_connection.connect();
 
     // 在确认插入该数据之前，需要对密码进行加密处理
@@ -69,7 +69,7 @@ router.post('/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const mysql_connection = connection.createConnection();
+    const mysql_connection = connection.userSchema();
     mysql_connection.connect();
 
     const checkSql = 'select * from `schema` where email=?'

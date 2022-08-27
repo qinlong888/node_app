@@ -3,6 +3,8 @@ const app = express()
 
 // 引入users
 const users = require('./routes/api/users')
+// 引入profiles
+const profiles = require('./routes/api/profiles')
 
 // 引入body-parser的中间件,解析http请求体
 const bodyParser = require('body-parser')
@@ -12,12 +14,9 @@ const connection = require('./config/mysql_connection')
 
 const passport = require('passport')
 
-// const User = require('./models/User')
-// let user1 = new User()
-// user1.id = 1
-// console.log(user1)
+
 // 执行连接数据库的中间件
-const mysql_connection = connection.createConnection()
+const mysql_connection = connection.userSchema()
 mysql_connection.connect();
 const sql = 'SELECT * FROM `schema`';
 mysql_connection.query(sql, (err, result, fields) => {
@@ -41,14 +40,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
-// console.log('http://localhost:5000/api/users/test')
-// app.get('/', function (request, response) {
-//     response.send('hello world!')
-// })
-
-
 // 使用routes
 app.use('/api/users', users)
+app.use('/api/profiles', profiles)
 
 const port = process.env.PORT || 5000
 
