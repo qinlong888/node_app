@@ -17,7 +17,7 @@ class Profiles {
                 type: String,
                 required: true
             },
-            crash: {
+            cash: {
                 type: String,
             },
             remark: {

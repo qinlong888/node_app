@@ -45,7 +45,7 @@ router.post('/add', passport.authenticate("jwt", { session: false }), (req, res)
     })
 })
 
-// @route POST api/profiles
+// @route get api/profiles
 // @desc 获取所有信息接口
 // @access Private
 router.get('/', passport.authenticate("jwt", { session: false }), (req, res) => {
@@ -62,7 +62,7 @@ router.get('/', passport.authenticate("jwt", { session: false }), (req, res) => 
     })
 })
 
-// @route POST api/profiles
+// @route get api/profiles
 // @desc 获取单个信息接口
 // @access Private
 router.get('/:id', passport.authenticate("jwt", { session: false }), (req, res) => {
@@ -80,4 +80,60 @@ router.get('/:id', passport.authenticate("jwt", { session: false }), (req, res) 
     })
 })
 
+// @route POST api/profiles/edit
+// @desc 编辑信息接口
+// @access Private
+router.post('/edit/:id', passport.authenticate("jwt", { session: false }), (req, res) => {
+    const profileFields = {};
+    if (req.body) {
+        profileFields.type = req.body.type;
+        profileFields.describe = req.body.describe;
+        profileFields.income = req.body.income;
+        profileFields.expend = req.body.expend;
+        profileFields.cash = req.body.cash;
+        profileFields.remark = req.body.remark;
+    }
+
+    const mysql_connection = connection.profileSchema();
+    mysql_connection.connect();
+
+    const getOneSql = "update profiles set type=?, `describe`=?, income=?, expend=?, crash=?, remark=? where id=?";
+    const params = [profileFields.type, profileFields.describe, profileFields.income, profileFields.expend, profileFields.cash, profileFields.remark, req.params.id];
+    mysql_connection.query(getOneSql, params, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        if(result.affectedRows !== 1) {
+            console.log('数据修改失败！');
+            res.status(400).json('数据修改失败！');
+            return ;
+        }
+        console.log('编辑成功！');
+        res.json(profileFields);
+    })
+})
+
+// @route POST api/profiles/delete
+// @desc 删除信息接口
+// @access Private
+router.post('/delete/:id', passport.authenticate("jwt", { session: false }), (req, res) => {
+    
+    const mysql_connection = connection.profileSchema();
+    mysql_connection.connect();
+
+    const getOneSql = "delete from profiles where id=?";
+    const params = [req.params.id];
+    mysql_connection.query(getOneSql, params, (err, result) => {
+        if (err) {
+            throw err;
+        }
+        if(result.affectedRows !== 1) {
+            console.log('数据删除失败！');
+            res.status(400).json('数据删除失败！');
+            return ;
+        }
+        console.log('删除成功！');
+        res.json('删除成功！');
+    })
+})
 module.exports = router
