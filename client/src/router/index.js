@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Index from '../views/Index.vue'
 
+import Register from '../views/Register.vue'
+
+import NotFound from '../views/404.vue'
+
 const routes = [
   {
     path: '/',
@@ -9,11 +13,19 @@ const routes = [
   {
     path: '/index',
     name: 'index',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: Index
-  }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404',
+    component: NotFound
+  },
+
 ]
 
 const router = createRouter({
