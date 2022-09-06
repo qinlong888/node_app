@@ -8,7 +8,7 @@ import NotFound from '../views/404.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/index'
+    redirect: '/register'
   },
   {
     path: '/index',

@@ -124,9 +124,22 @@ export default {
   },
   methods: {
     submitForm(formName) {
+      // console.log('refs:', this.$refs)
+      // 通过$refs, 调用实例组件的方法验证表单
       this.$refs[formName].validate((valid) => {
+        // 验证通过的结果为true
         if (valid) {
-          alert("submit!");
+          this.$axios
+            .post("/api/users/register", this.registerUser)
+            .then((response) => {
+              console.log("res", response);
+              // 注册成功
+              this.$message({
+                message: "账号注册成功！",
+                type: "success",
+              });
+            });
+          this.$router.push("/login");
         } else {
           console.log("error submit!!");
           return false;
@@ -142,7 +155,7 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: url(../assets/bg.jpeg) no-repeat center center;
+  background: url(../assets/bg.jpg) no-repeat center center;
   background-size: 100% 100%;
 }
 
