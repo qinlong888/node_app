@@ -3,6 +3,40 @@
     <section class="form_container">
       <div class="manage_tip">
         <span class="title"> 在线后台管理系统 </span>
+        <el-form
+          ref="registerForm"
+          :model="registerUser"
+          :rules="rules"
+          label-width="80px"
+          class="registerForm"
+        >
+          <el-form-item label="用户名" prop="name">
+            <el-input v-model="registerUser.name" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="registerUser.email" placeholder="请输入邮箱" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="registerUser.password" type="password" />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="password2">
+            <el-input v-model="registerUser.password2" type="password" />
+          </el-form-item>
+          <el-form-item label="选择身份">
+            <el-select v-model="registerUser.identity" placeholder="请选择身份">
+              <el-option label="管理员" value="manager" />
+              <el-option label="员工" value="employee" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              class="submit_btn"
+              @click="submitForm('registerForm')"
+              >注册</el-button
+            >
+          </el-form-item>
+        </el-form>
       </div>
     </section>
   </div>
@@ -17,6 +51,88 @@ export default {
   },
   mounted() {
     console.log("渲染");
+  },
+  data() {
+    var validatePassword2 = (rules, value, callback) => {
+      if (value !== this.registerUser.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
+    return {
+      registerUser: {
+        name: "",
+        email: "",
+        password: "",
+        password2: "",
+        identity: "",
+      },
+      rules: {
+        password: [
+          {
+            required: true,
+            message: "密码不能为空",
+            trigger: "blur",
+          },
+          {
+            min: 6,
+            max: 30,
+            message: "长度6~30之间",
+            trigger: "blur",
+          },
+        ],
+        password2: [
+          {
+            required: true,
+            message: "确认密码不能为空",
+            trigger: "blur",
+          },
+          {
+            min: 6,
+            max: 30,
+            message: "长度6~30之间",
+            trigger: "blur",
+          },
+          {
+            validator: validatePassword2,
+            trigger: "blur",
+          },
+        ],
+        email: [
+          {
+            required: true,
+            message: "邮箱格式不正确",
+            trigger: "blur",
+          },
+        ],
+        name: [
+          {
+            required: true,
+            message: "用户名不能为空",
+            trigger: "blur",
+          },
+          {
+            min: 2,
+            max: 30,
+            message: "长度2~30之间",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
+  },
+  methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert("submit!");
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
   },
 };
 </script>
@@ -46,5 +162,17 @@ export default {
   font-weight: bold;
   font-size: 26px;
   color: #fff;
+}
+
+.submit_btn {
+  width: 100%;
+}
+
+.registerForm {
+  margin-top: 20px;
+  background-color: #fff;
+  padding: 20px 40px 20px 20px;
+  border-radius: 5px;
+  box-shadow: 0px 5px 10px #cccc;
 }
 </style>
