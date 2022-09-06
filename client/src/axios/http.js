@@ -42,6 +42,7 @@ axios.interceptors.response.use(function (response) {
     // 提示错误信息
     console.log('响应请求失败！', error);
     ElMessage.error(error.response.data);
+    endLoading();
     return Promise.reject(error);
 });
 

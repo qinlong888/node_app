@@ -5,10 +5,12 @@ import Register from '../views/Register.vue'
 
 import NotFound from '../views/404.vue'
 
+import Login from '../views/Login.vue'
+
 const routes = [
   {
     path: '/',
-    redirect: '/register'
+    redirect: '/login'
   },
   {
     path: '/index',
@@ -25,7 +27,11 @@ const routes = [
     name: '404',
     component: NotFound
   },
-
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
 ]
 
 const router = createRouter({
