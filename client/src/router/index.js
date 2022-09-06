@@ -39,4 +39,19 @@ const router = createRouter({
   routes
 })
 
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  // ...
+  const isLogin = localStorage.token ? true : false;
+  if (to.path == "/login" || to.path == "/register") {
+    // 登陆界面和注册界面，直接通行
+    next();
+  } else {
+    // 如果已经登录，直接通行
+    isLogin ? next() : next('/login');
+  }
+  // 返回 false 以取消导航
+  // return false
+})
+
 export default router

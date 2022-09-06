@@ -24,6 +24,12 @@ axios.interceptors.request.use((config) => {
     // 发送请求时，加载动画
     console.log('发送请求！');
     startLoading();
+
+    // 在请求登录接口时，检查token是否存在
+    if (localStorage.token) {
+        // 设置统一的请求头
+        config.headers.Authorization = localStorage.token;
+    }
     return config;
 }, (error) => {
     // 请求错误，返回Promise拒绝态
@@ -43,6 +49,17 @@ axios.interceptors.response.use(function (response) {
     console.log('响应请求失败！', error);
     ElMessage.error(error.response.data);
     endLoading();
+
+    // 如果token失效
+    const { status } = error.response;
+    if (status == 401) {
+        ElMessage.error('token失效！请重新登录！');
+        // 清除本地旧的token
+        localStorage.removeItem('token');
+        // 跳转回登陆界面，重新登录
+        this.$router.push('/login');
+    }
+
     return Promise.reject(error);
 });
 
