@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
+
 export default {
   name: "login",
   components: {},
@@ -82,6 +84,15 @@ export default {
     };
   },
   methods: {
+    // 如果传入的参数为空，返回true
+    isEmpty(value) {
+      return (
+        value === undefined ||
+        value === null ||
+        (typeof value === "object" && Object.keys(value).length === 0) ||
+        (typeof value === "string" && value.trim().length === 0)
+      );
+    },
     submitForm(formName) {
       // console.log('refs:', this.$refs)
       // 通过$refs, 调用实例组件的方法验证表单
@@ -94,7 +105,17 @@ export default {
               console.log("res", response);
               // 登录成功拿到token
               const { token } = response.data;
-              localStorage.setItem("token", token);
+              localStorage.setItem("eleToken", token);
+
+              // 解析token
+              const decode = jwt_decode(token);
+              //   console.log('decode:', decode)
+
+              // TOKEN存储到Vuex中
+              this.$store.dispatch("setIsAutnenticated", !this.isEmpty(decode));
+              // 用户存储到Vuex中
+              this.$store.dispatch("setUser", decode);
+
               this.$router.push("/index");
             });
         } else {

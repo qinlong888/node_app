@@ -42,7 +42,7 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   // ...
-  const isLogin = localStorage.token ? true : false;
+  const isLogin = localStorage.eleToken ? true : false;
   if (to.path == "/login" || to.path == "/register") {
     // 登陆界面和注册界面，直接通行
     next();

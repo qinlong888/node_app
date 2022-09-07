@@ -3,6 +3,34 @@
     <router-view />
   </div>
 </template>
+<script>
+import jwt_decode from "jwt-decode";
+
+export default {
+  name: "app",
+  components: {},
+  created() {
+    if (localStorage.eleToken) {
+      const decode = jwt_decode(localStorage.eleToken);
+      // TOKEN存储到Vuex中
+      this.$store.dispatch("setIsAutnenticated", !this.isEmpty(decode));
+      // 用户存储到Vuex中
+      this.$store.dispatch("setUser", decode);
+    }
+  },
+  methods: {
+    // 如果传入的参数为空，返回true
+    isEmpty(value) {
+      return (
+        value === undefined ||
+        value === null ||
+        (typeof value === "object" && Object.keys(value).length === 0) ||
+        (typeof value === "string" && value.trim().length === 0)
+      );
+    },
+  },
+};
+</script>
 
 <style>
 #app {

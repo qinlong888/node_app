@@ -26,9 +26,9 @@ axios.interceptors.request.use((config) => {
     startLoading();
 
     // 在请求登录接口时，检查token是否存在
-    if (localStorage.token) {
+    if (localStorage.eleToken) {
         // 设置统一的请求头
-        config.headers.Authorization = localStorage.token;
+        config.headers.Authorization = localStorage.eleToken;
     }
     return config;
 }, (error) => {
@@ -55,7 +55,7 @@ axios.interceptors.response.use(function (response) {
     if (status == 401) {
         ElMessage.error('token失效！请重新登录！');
         // 清除本地旧的token
-        localStorage.removeItem('token');
+        localStorage.removeItem('eleToken');
         // 跳转回登陆界面，重新登录
         this.$router.push('/login');
     }
