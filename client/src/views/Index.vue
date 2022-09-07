@@ -1,10 +1,16 @@
 <template>
-  <div>测试</div>
+  <div class="index">
+    <head-nav></head-nav>
+  </div>
 </template>
 
 <script>
+import HeadNav from "../components/HeadNav.vue";
+
 export default {
   name: "index",
-  components: {},
+  components: {
+    HeadNav,
+  },
 };
 </script>
