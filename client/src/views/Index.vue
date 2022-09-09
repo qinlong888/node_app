@@ -1,30 +1,24 @@
 <template>
-  <div>
-    <div class="index">
-      <head-nav></head-nav>
+  <div class="index">
+    <HeadNav></HeadNav>
+    <LeftMenu></LeftMenu>
+    <div class="rightContainer">
       <router-view></router-view>
-      <!-- <div class="rightContainer">
-      <router-view></router-view>
-    </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import HeadNav from "../components/HeadNav.vue";
-
+import HeadNav from "../components/HeadNav";
+import LeftMenu from "../components/LeftMenu";
 export default {
   name: "index",
   components: {
     HeadNav,
-  },
-  created() {
-    // let index = document.querySelectorAll(".index")
-    // console.log(index.current);
+    LeftMenu,
   },
 };
 </script>
-
 <style scoped>
 .index {
   width: 100%;

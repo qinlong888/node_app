@@ -11,6 +11,8 @@ import Home from '../views/Home.vue'
 
 import InfoShow from '../views/InfoShow.vue'
 
+import LeftMenu from '../components/LeftMenu.vue'
+
 const routes = [
   {
     path: '/',
@@ -24,6 +26,7 @@ const routes = [
       { path: '', component: Home },
       { path: '/home', name: 'home', component: Home },
       { path: '/infoshow', name: 'infoshow', component: InfoShow },
+      { path: '/leftmenu', name: 'leftmenu', component: LeftMenu },
     ]
   },
   {
