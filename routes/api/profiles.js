@@ -23,7 +23,7 @@ router.post('/add', passport.authenticate("jwt", { session: false }), (req, res)
         profileFields.describe = req.body.describe;
         profileFields.income = req.body.income;
         profileFields.expend = req.body.expend;
-        profileFields.cash = req.body.cash;
+        profileFields.crash = req.body.crash;
         profileFields.remark = req.body.remark;
     }
 
@@ -31,7 +31,7 @@ router.post('/add', passport.authenticate("jwt", { session: false }), (req, res)
     mysql_connection.connect();
 
     const addSql = "insert into `profiles` (type, `describe`, income, expend, crash, remark) values (?, ?, ?, ?, ?, ?)";
-    const params = [profileFields.type, profileFields.describe, profileFields.income, profileFields.expend, profileFields.cash, profileFields.remark];
+    const params = [profileFields.type, profileFields.describe, profileFields.income, profileFields.expend, profileFields.crash, profileFields.remark];
     mysql_connection.query(addSql, params, (err, result) => {
         if (err) {
             throw err;
@@ -90,7 +90,7 @@ router.post('/edit/:id', passport.authenticate("jwt", { session: false }), (req,
         profileFields.describe = req.body.describe;
         profileFields.income = req.body.income;
         profileFields.expend = req.body.expend;
-        profileFields.cash = req.body.cash;
+        profileFields.crash = req.body.crash;
         profileFields.remark = req.body.remark;
     }
 
@@ -98,7 +98,7 @@ router.post('/edit/:id', passport.authenticate("jwt", { session: false }), (req,
     mysql_connection.connect();
 
     const getOneSql = "update profiles set type=?, `describe`=?, income=?, expend=?, crash=?, remark=? where id=?";
-    const params = [profileFields.type, profileFields.describe, profileFields.income, profileFields.expend, profileFields.cash, profileFields.remark, req.params.id];
+    const params = [profileFields.type, profileFields.describe, profileFields.income, profileFields.expend, profileFields.crash, profileFields.remark, req.params.id];
     mysql_connection.query(getOneSql, params, (err, result) => {
         if (err) {
             throw err;

@@ -20,7 +20,7 @@
             <el-icon><Operation /></el-icon>
             <span>资金管理</span>
           </template>
-          <router-link to="/manage">
+          <router-link to="/foundList">
             <el-menu-item index="1-1">资金流水</el-menu-item>
           </router-link>
         </el-sub-menu>

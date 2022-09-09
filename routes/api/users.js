@@ -99,7 +99,7 @@ router.post('/login', (req, res) => {
                 name: user.name,
                 avatar: user.avatar,
                 identity: user.identity
-            }, keys.secreteOrkey, { expiresIn: '10s' }, (err, token) => {
+            }, keys.secreteOrkey, { expiresIn: 3600 }, (err, token) => {
                 if (err) {
                     throw err;
                 }
