@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="添加资金信息"
+      :title="dialog.title"
       v-model="dialog.show"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -61,18 +61,12 @@ export default {
   name: "dialog",
   props: {
     dialog: Object,
+    formData: Object,
+    tableData: Array,
+    index: Number,
   },
   data() {
     return {
-      formData: {
-        type: "",
-        describe: "",
-        income: "",
-        crash: "",
-        remark: "",
-        expend: "",
-        id: "",
-      },
       format_type_list: [
         "提现",
         "提现手续费",
@@ -99,30 +93,43 @@ export default {
     console.log("dialog:", this.dialog);
   },
   methods: {
-    handleSubmit(form) {
-      this.$refs.form.validate((valid) => {
+    handleSubmit(from) {
+      this.$refs[from].validate((valid) => {
         if (valid) {
+          const option = this.dialog.option;
+          const url = option === "add" ? "add" : `edit/${this.formData.id}`;
+
           this.$axios
-            .post("/api/profiles/add", this.formData)
+            .post(`/api/profiles/${url}`, this.formData)
             .then((res) => {
+              //   console.log("res:", res);
+              //   console.log("这是添加接口！");
+
+              if (option === "add") {
+                this.tableData.push(this.formData);
+              } else {
+                this.tableData[this.index] = this.formData;
+              }
+              //   this.getFormData();
               this.$message({
-                message: "添加数据成功！",
+                message: "保存数据成功！",
                 type: "success",
               });
-            })
-            .catch((err) => {
-              this.$message({
-                message: "添加数据失败！",
-                type: "warning",
-              });
-              throw err;
             });
+          // 更新组件信息
+          console.log("更新组件！");
+
+          this.$emit("update");
 
           this.dialog.show = false;
-          this.$emit("update");
         }
       });
-      // this.$axios.post('/api/profiles/add', form)
+    },
+
+    // this.formData 的数据传回父组件Foundlist
+    getFormData() {
+      console.log("this.formData:", this.formData);
+      return this.formData();
     },
   },
 };

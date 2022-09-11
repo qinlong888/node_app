@@ -2,6 +2,16 @@
   <div class="fillcontain">
     <div>
       <el-from :inline="true" ref="add_data">
+        <el-from-item>
+          <el-button
+            type="primary"
+            size="samll"
+            icon="view"
+            @click="getFoundList()"
+          >
+            刷新
+          </el-button>
+        </el-from-item>
         <el-from-item class="btnRight">
           <el-button
             type="primary"
@@ -19,6 +29,7 @@
         v-if="tableData.length > 0"
         :data="tableData"
         style="width: 100%"
+        height="500"
         border
       >
         <el-table-column label="序号" type="index" width="70" align="center">
@@ -62,6 +73,7 @@
             <span style="color: #f56767">- {{ scope.row.expend }}</span>
           </template>
         </el-table-column>
+
         <el-table-column
           label="账户现金"
           prop="crash"
@@ -81,20 +93,27 @@
               type="warning"
               icon="edit"
               @click="handleEdit(scope.$index, scope.row)"
-              >Delete
+              >编辑
             </el-button>
             <el-button
               size="small"
               type="danger"
               icon="delete"
               @click="handleDelete(scope.$index, scope.row)"
-              >Delete
+              >删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <Dialog :dialog="dialog" @update="getFoundList()"></Dialog>
+    <Dialog
+      :dialog="dialog"
+      :formData="formData"
+      :tableData="tableData"
+      @update="getFoundList"
+      ref="formDialog"
+      :index="index"
+    ></Dialog>
   </div>
 </template>
 <script>
@@ -110,30 +129,81 @@ export default {
       tableData: [],
       dialog: {
         show: false,
+        title: "",
+        option: "",
       },
+      formData: {
+        type: "",
+        describe: "",
+        income: "",
+        crash: "",
+        remark: "",
+        expend: "",
+        id: "",
+      },
+      index: Number,
     };
   },
   created() {
     this.getFoundList();
   },
   methods: {
-    getFoundList() {
-      this.$axios
-        .get("/api/profiles")
-        .then((res) => {
-          console.log("profiles:", res);
-          this.tableData = res.data;
-          console.log("table:", this.tableData);
-        })
-        .catch((err) => {
-          console.log("请求失败");
-          throw err;
-        });
+    async getFoundList() {
+      console.log("发送接口获取数据前！");
+      const { data } = await this.$axios.get("/api/profiles").catch((err) => {
+        console.log("请求失败");
+        throw err;
+      });
+      console.log("发送接口获取数据后！");
+      console.log("table获取数据前！");
+      this.tableData = data;
+      console.log("table获取数据后！");
     },
-    handleEdit() {},
-    handleDelete() {},
+    handleEdit(index, row) {
+      this.formData = {
+        type: row.type,
+        describe: row.describe,
+        income: row.income,
+        crash: row.crash,
+        remark: row.remark,
+        expend: row.expend,
+        id: row.id,
+      };
+      this.index = index;
+      this.dialog = {
+        show: true,
+        title: "修改资金信息",
+        option: "edit",
+      };
+    },
+    async handleDelete(index, row) {
+      this.$axios.delete(`/api/profiles/delete/${row.id}`).then((res) => {
+        this.$message({
+          message: "删除数据成功！",
+          type: "success",
+        });
+        console.log("已删除数据！");
+        console.log("this.tableData:", this.tableData[index], index);
+        this.tableData.splice(index, 1);
+      });
+
+      await this.getFoundList();
+    },
     handleAdd() {
-      this.dialog.show = true;
+      this.formData = {
+        type: "",
+        describe: "",
+        income: "",
+        crash: "",
+        remark: "",
+        expend: "",
+        id: "",
+      };
+      this.dialog = {
+        show: true,
+        title: "添加资金信息",
+        option: "add",
+      };
     },
   },
 };
