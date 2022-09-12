@@ -206,6 +206,14 @@ export default {
       };
     },
   },
+  watch: {
+    // 监听对话框是否关闭，关闭直接刷新组件
+    'dialog.show': {
+      handler() {
+        this.getFoundList();
+      },
+    },
+  },
 };
 </script>
 <style scoped>

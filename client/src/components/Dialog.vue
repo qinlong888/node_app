@@ -92,6 +92,9 @@ export default {
   created() {
     console.log("dialog:", this.dialog);
   },
+  beforeDestroy() {
+    this.$emit("update");
+  },
   methods: {
     handleSubmit(from) {
       this.$refs[from].validate((valid) => {
@@ -102,13 +105,17 @@ export default {
           this.$axios
             .post(`/api/profiles/${url}`, this.formData)
             .then((res) => {
-              //   console.log("res:", res);
-              //   console.log("这是添加接口！");
-
               if (option === "add") {
                 this.tableData.push(this.formData);
               } else {
-                this.tableData[this.index] = this.formData;
+                const createDate = this.tableData[this.index].createDate;
+                this.tableData[this.index].createDate = createDate;
+                this.tableData[this.index].type = this.formData.type;
+                this.tableData[this.index].describe = this.formData.describe;
+                this.tableData[this.index].income = this.formData.income;
+                this.tableData[this.index].crash = this.formData.crash;
+                this.tableData[this.index].remark = this.formData.remark;
+                this.tableData[this.index].expend = this.formData.expend;
               }
               //   this.getFormData();
               this.$message({
@@ -116,20 +123,19 @@ export default {
                 type: "success",
               });
             });
-          // 更新组件信息
-          console.log("更新组件！");
-
-          this.$emit("update");
-
-          this.dialog.show = false;
         }
+        // 更新组件信息
+        console.log("更新组件！");
+
+        this.getTableData();
+
+        this.dialog.show = false;
       });
     },
 
-    // this.formData 的数据传回父组件Foundlist
-    getFormData() {
-      console.log("this.formData:", this.formData);
-      return this.formData();
+    // 刷新组件
+    async getTableData() {
+      await this.$emit("update");
     },
   },
 };
