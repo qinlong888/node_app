@@ -27,7 +27,7 @@
     <div class="table_container">
       <el-table
         v-if="tableData.length > 0"
-        :data="tableData"
+        :data="showTableData"
         style="width: 100%"
         height="500"
         border
@@ -105,6 +105,24 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
+      <el-row>
+        <el-col :span="24">
+          <div class="pagination">
+            <el-pagination
+              v-if="paginations.total > 0"
+              :page-sizes="paginations.page_sizes"
+              :page-size="paginations.page_size"
+              :layout="paginations.layout"
+              :total="paginations.total"
+              :current-page="paginations.page_index"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+            >
+            </el-pagination>
+          </div>
+        </el-col>
+      </el-row>
     </div>
     <Dialog
       :dialog="dialog"
@@ -127,11 +145,14 @@ export default {
   data() {
     return {
       tableData: [],
+      showTableData: [],
+
       dialog: {
         show: false,
         title: "",
         option: "",
       },
+      // 传入弹窗的表单数据
       formData: {
         type: "",
         describe: "",
@@ -141,7 +162,16 @@ export default {
         expend: "",
         id: "",
       },
-      index: Number,
+      index: Number, // table修改的下标
+
+      //需要给分页组件传的信息
+      paginations: {
+        page_index: 1, // 当前位于哪页
+        total: 0, // 总数
+        page_size: 5, // 1页显示多少条
+        page_sizes: [5, 10, 15, 20], //每页显示多少条
+        layout: "total, sizes, prev, pager, next, jumper", // 翻页属性
+      },
     };
   },
   created() {
@@ -154,10 +184,21 @@ export default {
         console.log("请求失败");
         throw err;
       });
-      console.log("发送接口获取数据后！");
-      console.log("table获取数据前！");
+
       this.tableData = data;
-      console.log("table获取数据后！");
+      // 设置分页数据
+      this.setPaginations();
+    },
+
+    setPaginations() {
+      // 分页属性设置
+      this.paginations.total = this.tableData.length;
+      this.paginations.page_index = 1;
+      this.paginations.page_size = 5;
+      // 设置默认的分页数据
+      this.showTableData = this.tableData.filter((item, index) => {
+        return index < this.paginations.page_size;
+      });
     },
     handleEdit(index, row) {
       this.formData = {
@@ -182,8 +223,6 @@ export default {
           message: "删除数据成功！",
           type: "success",
         });
-        console.log("已删除数据！");
-        console.log("this.tableData:", this.tableData[index], index);
         this.tableData.splice(index, 1);
       });
 
@@ -205,10 +244,32 @@ export default {
         option: "add",
       };
     },
+    // 页面切换数据量展示
+    handleSizeChange(page_size) {
+      // 切换size
+      this.paginations.page_index = 1;
+      this.paginations.page_size = page_size;
+      this.showTableData = this.tableData.filter((item, index) => {
+        return index < page_size;
+      });
+    },
+    handleCurrentChange(current_page) {
+      // 获取当前页的第一条数据的下标
+      let current_start_index = this.paginations.page_size * (current_page - 1);
+      // 当页的下一页的第一条数据的下标
+      let current_end_index = this.paginations.page_size * current_page;
+      let table = [];
+      for (let i = current_start_index; i < current_end_index; i++) {
+        if (this.tableData[i]) {
+          table.push(this.tableData[i]);
+        }
+      }
+      this.showTableData = table;
+    },
   },
   watch: {
     // 监听对话框是否关闭，关闭直接刷新组件
-    'dialog.show': {
+    "dialog.show": {
       handler() {
         this.getFoundList();
       },
