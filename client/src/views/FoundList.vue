@@ -1,35 +1,49 @@
 <template>
   <div class="fillcontain">
     <div>
-      <el-from :inline="true" ref="add_data">
-        <el-from-item>
+      <el-form :inline="true" ref="search_data" :model="search_data">
+        <el-form-item label="投标时间筛选:">
+          <el-date-picker
+            v-model="search_data.startTime"
+            type="datetime"
+            placeholder="选择开始时间"
+          >
+          </el-date-picker>
+          --
+          <el-date-picker
+            v-model="search_data.endTime"
+            type="datetime"
+            placeholder="选择结束时间"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
           <el-button
             type="primary"
-            size="samll"
-            icon="view"
-            @click="getFoundList()"
+            size="small"
+            icon="search"
+            @click="handleSearch()"
+            >筛选</el-button
           >
-            刷新
-          </el-button>
-        </el-from-item>
+        </el-form-item>
         <el-from-item class="btnRight">
           <el-button
             type="primary"
-            size="samll"
+            size="small"
             icon="view"
             @click="handleAdd()"
+            v-if="user.identity === 'admin'"
+            >添加</el-button
           >
-            添加
-          </el-button>
         </el-from-item>
-      </el-from>
+      </el-form>
     </div>
     <div class="table_container">
       <el-table
         v-if="tableData.length > 0"
         :data="showTableData"
         style="width: 100%"
-        height="500"
+        max-height="600"
         border
       >
         <el-table-column label="序号" type="index" width="70" align="center">
@@ -100,6 +114,7 @@
               type="danger"
               icon="delete"
               @click="handleDelete(scope.$index, scope.row)"
+              v-if="user.identity === 'admin'"
               >删除
             </el-button>
           </template>
@@ -146,6 +161,7 @@ export default {
     return {
       tableData: [],
       showTableData: [],
+      filterTableData: [],
 
       dialog: {
         show: false,
@@ -172,6 +188,11 @@ export default {
         page_sizes: [5, 10, 15, 20], //每页显示多少条
         layout: "total, sizes, prev, pager, next, jumper", // 翻页属性
       },
+      // 模糊搜索条件
+      search_data: {
+        startTime: "",
+        endTime: "",
+      },
     };
   },
   created() {
@@ -186,12 +207,13 @@ export default {
       });
 
       this.tableData = data;
+      this.filterTableData = data;
       // 设置分页数据
       this.setPaginations();
     },
 
     setPaginations() {
-      // 分页属性设置
+      // 分页属性设置,根据this.tableData设置
       this.paginations.total = this.tableData.length;
       this.paginations.page_index = 1;
       this.paginations.page_size = 5;
@@ -266,6 +288,31 @@ export default {
       }
       this.showTableData = table;
     },
+    // 筛选函数
+    handleSearch() {
+      if (!this.search_data.startTime || !this.search_data.endTime) {
+        this.$message({
+          type: "warning",
+          message: "请选择时间区间",
+        });
+
+        this.getFoundList();
+        return;
+      }
+
+      const startTime = this.search_data.startTime.getTime();
+      const endTime = this.search_data.endTime.getTime();
+
+      console.log("startTime", startTime, endTime);
+
+      this.tableData = this.filterTableData.filter((item, index) => {
+        let date = new Date(item.createDate);
+        let time = date.getTime();
+        return time >= startTime && time <= endTime;
+      });
+
+      this.setPaginations();
+    },
   },
   watch: {
     // 监听对话框是否关闭，关闭直接刷新组件
@@ -273,6 +320,11 @@ export default {
       handler() {
         this.getFoundList();
       },
+    },
+  },
+  computed: {
+    user() {
+      return this.$store.getters.user;
     },
   },
 };
@@ -288,7 +340,7 @@ export default {
   float: right;
 }
 .pagination {
-  text-align: right;
+  float: right;
   margin-top: 10px;
 }
 </style>
